@@ -1,8 +1,8 @@
-from sklearn.impute import KNNImputer
+from missforest import MissForest
 
-class KNNImputation:
+class MissForestImputation:
     def __init__(self):
-        self.imputer = KNNImputer()
+        self.imputer = MissForest()
     
     def inbetween(self, keyframes):
         inbetweened_data = self.imputer.fit_transform(keyframes)
