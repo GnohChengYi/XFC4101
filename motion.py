@@ -24,7 +24,7 @@ class UniformlyAcceleratedMotion(Motion):
         super().__init__(self.position_function)
 
     def __str__(self):
-        return f"StraightMotion-p0={self.position0},v0={self.velocity0},a={self.acceleration}"
+        return f"UniformlyAcceleratedMotion-p0={self.position0},v0={self.velocity0},a={self.acceleration}"
 
 
 class EllipticalMotion(Motion):
