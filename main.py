@@ -1,9 +1,10 @@
 from motion import Motion
 import random
 import time
-from Imputation.knn import KNNImputation
-from Imputation.missforest import MissForestImputation
-from Imputation.mice import MiceImputation
+from Method.knn import KNNImputation
+from Method.missforest import MissForestImputation
+from Method.mice import MiceImputation
+from Method.lerp import LinearInterpolator
 
 
 DEBUG = False
@@ -47,7 +48,8 @@ for missing_fraction in missing_fractions:
     # generate inbetweened data
     # method = KNNImputation()
     # method = MissForestImputation()
-    method = MiceImputation()
+    # method = MiceImputation()
+    method = LinearInterpolator()
     start_time = time.time()
     inbetweened_data = method.inbetween(keyframes)
     end_time = time.time()
