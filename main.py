@@ -3,6 +3,7 @@ import random
 import time
 from Imputation.knn import KNNImputation
 from Imputation.missforest import MissForestImputation
+from Imputation.mice import MiceImputation
 
 
 DEBUG = False
@@ -19,11 +20,12 @@ motion = Motion(position_function)
 full_data = motion.get_frames(from_t, to_t)
 if DEBUG:
     print(full_data)
-file_name = f"Data/truth_{position0}_{velocity0}_{acceleration}.txt"
-with open(file_name, "w") as file:
-    for frame in full_data:
-        file.write(",".join(str(value) for value in frame) + "\n")
-print("Full data saved to:", file_name)
+else:
+    file_name = f"Data/truth_{position0}_{velocity0}_{acceleration}.txt"
+    with open(file_name, "w") as file:
+        for frame in full_data:
+            file.write(",".join(str(value) for value in frame) + "\n")
+    print("Full data saved to:", file_name)
 
 
 random.seed(4101)
@@ -44,22 +46,25 @@ for missing_fraction in missing_fractions:
 
     # generate inbetweened data
     # method = KNNImputation()
-    method = MissForestImputation()
+    # method = MissForestImputation()
+    method = MiceImputation()
     start_time = time.time()
     inbetweened_data = method.inbetween(keyframes)
     end_time = time.time()
     execution_time = end_time - start_time
     print("Execution time:", execution_time, "seconds")
     if DEBUG:
+        print(f'missing_fraction: {missing_fraction}')
         print(inbetweened_data)
 
 
     # save inbetweened_data to a file
-    file_name = f"Data/inbetweened_{method.__class__.__name__}_{missing_fraction}_{position0}_{velocity0}_{acceleration}_{execution_time}.txt"
-    with open(file_name, "w") as file:
-        for frame in inbetweened_data:
-            file.write(",".join(str(value) for value in frame) + "\n")
-    print("Inbetweened data saved to:", file_name)
+    if not DEBUG:
+        file_name = f"Data/inbetweened_{method.__class__.__name__}_{missing_fraction}_{position0}_{velocity0}_{acceleration}_{execution_time}.txt"
+        with open(file_name, "w") as file:
+            for frame in inbetweened_data:
+                file.write(",".join(str(value) for value in frame) + "\n")
+        print("Inbetweened data saved to:", file_name)
 
 
     # compare inbetweened data with original data
