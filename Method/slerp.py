@@ -64,3 +64,6 @@ class SphericalLinearInterpolator:
         y = r * np.sin(theta) * np.sin(phi)
         z = r * np.cos(theta)
         return x, y, z
+
+    def __str__(self) -> str:
+        return "SLERP"

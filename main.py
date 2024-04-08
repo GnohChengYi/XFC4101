@@ -3,6 +3,7 @@ from motion import *
 import numpy as np
 import random
 import time
+from visualization import plot
 from Method.knn import KNNImputation
 from Method.missforest import MissForestImputation
 from Method.mice import MiceImputation
@@ -10,7 +11,7 @@ from Method.lerp import LinearInterpolator
 from Method.slerp import SphericalLinearInterpolator
 
 
-DEBUG = True
+DEBUG = False
 
 # initialize full data
 from_t = 0
@@ -47,11 +48,12 @@ random.seed(4101)
 num_trials = 2 if DEBUG else 10
 
 missing_fractions = [0.5, 0.6, 0.7, 0.8, 0.9]
-missing_fraction = 0.2      ################################ fix missing_fraction for each run
+missing_fraction = 0.5      ################################################ fix missing_fraction for each run
 print(f'missing_fraction: {missing_fraction}')
 
-# methods = [KNNImputation(), MissForestImputation(), MiceImputation(), LinearInterpolator(), SphericalLinearInterpolator()]
-methods = [MiceImputation()]
+methods = [KNNImputation(), MissForestImputation(), MiceImputation(), LinearInterpolator(), SphericalLinearInterpolator()]
+if DEBUG:
+    pass
 
 
 ranks = [[] for _ in range(len(methods))]   # each [] will store the ranks (for each trial) of the method in the corresponding index of methods
@@ -118,9 +120,29 @@ for i, r in enumerate(ranks):
     third_quartile = np.percentile(r, 75)
     
     print()
-    print(methods[i].__class__.__name__)
+    print(str(methods[i]))
     print("Minimum:", minimum)
     print("Maximum:", maximum)
     print("Median:", median)
     print("First Quartile:", first_quartile)
     print("Third Quartile:", third_quartile)
+
+
+# Save results to a file
+file_name = f"Data/results_{motion}_{missing_fraction}.txt"
+with open(file_name, "w") as file:
+    file.write("Motion: " + str(motion) + "\n")
+    file.write("Missing Fraction: " + str(missing_fraction) + "\n\n")
+    
+    for i, r in enumerate(ranks):
+        file.write(str(methods[i]) + "\n")
+        file.write(str(r) + "\n\n")
+    
+print("Results saved to:", file_name)
+
+
+# Plot and save results
+labels = ["KNN", "MissForest", "MICE", "LERP", "SLERP"]
+ylabel = "Quality Rank"
+title = f"{motion.__class__.__name__}, {int(missing_fraction * 100)}% missing data"
+plot(ranks, labels, ylabel, title, save=not DEBUG)

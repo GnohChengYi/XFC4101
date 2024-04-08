@@ -34,3 +34,6 @@ class LinearInterpolator:
             right_index += 1
         assert right_index < len(keyframes), "No right index found"
         return left_index,right_index
+
+    def __str__(self) -> str:
+        return "LERP"

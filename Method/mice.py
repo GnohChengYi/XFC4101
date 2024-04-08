@@ -5,6 +5,7 @@ import numpy as np
 class MiceImputation:
     # generates multiple imputations and takes the average of them
     def inbetween(self, keyframes, num_imputations=5, random_state=4101):
+        # referred to https://github.com/SamsungSAILMontreal/ForestDiffusion/blob/main/script_imputation.py#L276
         data_pd = pd.DataFrame(keyframes, columns = [str(i) for i in range(len(keyframes[0]))])
         kds = mf.ImputationKernel(data_pd, save_all_iterations=False, datasets=num_imputations, random_state=random_state)
         kds.mice()
@@ -15,3 +16,6 @@ class MiceImputation:
         np_imputations = np.array(imputations)
         inbetweened_data = np_imputations.mean(axis=0)
         return inbetweened_data
+
+    def __str__(self) -> str:
+        return "MICE"
