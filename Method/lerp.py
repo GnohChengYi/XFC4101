@@ -11,16 +11,7 @@ class LinearInterpolator:
         return interpolated_keyframes
 
     def interpolate(self, keyframes, t):
-        # Find the two closest x values
-        left_index = t
-        while left_index >= 0 and None in keyframes[left_index]:
-            left_index -= 1
-        assert left_index >= 0, "No left index found"
-        
-        right_index = t
-        while right_index < len(keyframes) and None in keyframes[right_index]:
-            right_index += 1
-        assert right_index < len(keyframes), "No right index found"
+        left_index, right_index = self.get_useful_keyframes(keyframes, t)
         
         # Perform linear interpolation for each variable (except t)
         interpolated_keyframe = [t]
@@ -31,3 +22,15 @@ class LinearInterpolator:
             interpolated_keyframe.append(interpolated_value)
         
         return interpolated_keyframe
+
+    def get_useful_keyframes(self, keyframes, t):
+        left_index = t
+        while left_index >= 0 and None in keyframes[left_index]:
+            left_index -= 1
+        assert left_index >= 0, "No left index found"
+        
+        right_index = t
+        while right_index < len(keyframes) and None in keyframes[right_index]:
+            right_index += 1
+        assert right_index < len(keyframes), "No right index found"
+        return left_index,right_index

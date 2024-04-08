@@ -5,6 +5,7 @@ from Method.knn import KNNImputation
 from Method.missforest import MissForestImputation
 from Method.mice import MiceImputation
 from Method.lerp import LinearInterpolator
+from Method.slerp import SphericalLinearInterpolator
 
 
 DEBUG = False
@@ -42,6 +43,7 @@ for missing_fraction in missing_fractions:
     for row in missing_rows:
         keyframes[row][1:] = [None] * (len(keyframes[row]) - 1)
     if DEBUG:
+        print(f'missing_fraction: {missing_fraction}')
         print(keyframes)
     
 
@@ -49,14 +51,14 @@ for missing_fraction in missing_fractions:
     # method = KNNImputation()
     # method = MissForestImputation()
     # method = MiceImputation()
-    method = LinearInterpolator()
+    # method = LinearInterpolator()
+    method = SphericalLinearInterpolator()
     start_time = time.time()
     inbetweened_data = method.inbetween(keyframes)
     end_time = time.time()
     execution_time = end_time - start_time
     print("Execution time:", execution_time, "seconds")
     if DEBUG:
-        print(f'missing_fraction: {missing_fraction}')
         print(inbetweened_data)
 
 
