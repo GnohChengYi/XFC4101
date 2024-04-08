@@ -1,7 +1,4 @@
-import math
 import numpy as np
-import pandas as pd
-import scipy.spatial.transform as st
 
 # Only works up to 3D (excluding time frame)
 class SphericalLinearInterpolator:
