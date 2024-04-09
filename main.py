@@ -18,12 +18,18 @@ from_t = 0
 to_t = 10 if DEBUG else 1000
 
 position0 = [0, 0]
-velocity0 = [1, 2]
-acceleration = [0.3, 0.4]
-motion = UniformlyAcceleratedMotion(position0, velocity0, acceleration)
+velocity0 = [10, 10]
+acceleration = [0, -0.02]
+motion = UniformlyAcceleratedMotion(position0, velocity0, acceleration) # projectile motion
+# position0 = [0, 0]
+# velocity0 = [1, 2]
+# acceleration = [0.3, 0.4]
+# motion = UniformlyAcceleratedMotion(position0, velocity0, acceleration)
 # x_radius = 2
 # y_radius = 3
 # motion = EllipticalMotion(x_radius, y_radius)
+# radius = 2
+# motion = CircularMotion(radius)
 # amplitude = 2
 # frequency = 0.1
 # phase = 3
@@ -53,6 +59,7 @@ print(f'missing_fraction: {missing_fraction}')
 
 methods = [KNNImputation(), MissForestImputation(), MiceImputation(), LinearInterpolator(), SphericalLinearInterpolator()]
 if DEBUG:
+    # methods = [MiceImputation()]
     pass
 
 

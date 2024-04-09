@@ -1,20 +1,17 @@
-import miceforest as mf
-import pandas as pd
-import numpy as np
+from sklearn.experimental import enable_iterative_imputer   # explicitly enable iterative imputer to use it
+from sklearn.impute import IterativeImputer
 
 class MiceImputation:
     # generates multiple imputations and takes the average of them
-    def inbetween(self, keyframes, num_imputations=5, random_state=4101):
-        # referred to https://github.com/SamsungSAILMontreal/ForestDiffusion/blob/main/script_imputation.py#L276
-        data_pd = pd.DataFrame(keyframes, columns = [str(i) for i in range(len(keyframes[0]))])
-        kds = mf.ImputationKernel(data_pd, save_all_iterations=False, datasets=num_imputations, random_state=random_state)
-        kds.mice()
+    def inbetween(self, keyframes, n_imputations=5):
+        imputer = IterativeImputer()
+        imputer.fit(keyframes)
         imputations = []
-        for i in range(num_imputations):
-            imputation = kds.complete_data(dataset=i).to_numpy()
-            imputations.append(imputation)
-        np_imputations = np.array(imputations)
-        inbetweened_data = np_imputations.mean(axis=0)
+        for _ in range(n_imputations):
+            imputed_data = imputer.transform(keyframes)
+            imputations.append(imputed_data)
+        
+        inbetweened_data = sum(imputations) / n_imputations
         return inbetweened_data
 
     def __str__(self) -> str:

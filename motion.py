@@ -35,7 +35,16 @@ class EllipticalMotion(Motion):
         super().__init__(self.position_function)
     
     def __str__(self):
-        return "EllipticalMotion,xr={self.x_radius},yr={self.y_radius}"
+        return f"EllipticalMotion,xr={self.x_radius},yr={self.y_radius}"
+
+
+class CircularMotion(EllipticalMotion):
+    def __init__(self, radius):
+        self.radius = radius
+        super().__init__(radius, radius)
+    
+    def __str__(self):
+        return f"CircularMotion,r={self.radius}"
 
 
 class SimpleHarmonicMotion(Motion):
