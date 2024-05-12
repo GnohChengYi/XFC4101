@@ -1,4 +1,5 @@
 import json
+import matplotlib.pyplot as plt
 import random
 import requests
 from sklearn.metrics import mean_squared_error
@@ -47,9 +48,9 @@ for t in range(from_t, to_t + 1):
 
 # fix experiment parameters
 random.seed(4101)
-num_trials = 2
-methods = [KNNImputation(), LinearInterpolator()]
-missing_fractions = [0.5, 0.6]
+num_trials = 1 if DEBUG else 10
+methods = [KNNImputation(), LinearInterpolator()] if DEBUG else [KNNImputation(), MissForestImputation(), MiceImputation(), LinearInterpolator()]
+missing_fractions = [0.5, 0.6] if DEBUG else [0.5, 0.6, 0.7, 0.8, 0.9]
 
 
 # conduct experiments
@@ -84,6 +85,14 @@ for missing_fraction in missing_fractions:
             execution_time = end_time - start_time
             method_time.append(execution_time)
             
+            # save inbetweened_data to a file
+            if not DEBUG:
+                file_name = f"chopsticks/missing={missing_fraction}_method={method.__class__.__name__}_trial={trial}.txt"
+                with open(file_name, "w") as file:
+                    for frame in inbetweened_data:
+                        file.write(",".join(str(value) for value in frame) + "\n")
+                print("Inbetweened data saved to:", file_name)
+            
             # compute quality
             rmse = mean_squared_error(inbetweened_data, full_data, squared=False)
             method_RMSE.append(rmse)
@@ -108,9 +117,43 @@ for missing_fraction in missing_fractions:
         missing_times[i].append(average_time)
 
 
-print(f'Missing RMSEs: {missing_RMSEs}')
-print(f'Missing ranks: {missing_ranks}')
-print(f'Missing times: {missing_times}')
+if DEBUG:   
+    print(f'Missing RMSEs: {missing_RMSEs}')
+    print(f'Missing ranks: {missing_ranks}')
+    print(f'Missing times: {missing_times}')
+
+
+# plot results
+method_labels = ["KNN", "MissForest", "MICE", "LERP"]
+
+def plot_results(xlabel, ylabel, method_labels, DEBUG):
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.legend(method_labels)
+    plt.title(f'{ylabel} vs {xlabel}')
+    if not DEBUG:
+        path = f'chopsticks/plots/{ylabel}.png'
+        plt.savefig(path)
+        print(f"Figure saved to {path}")
+    plt.show()
+
+xlabel = "Missing Fraction"
+
+for i, method in enumerate(methods):
+    plt.plot(missing_fractions, missing_RMSEs[i])
+ylabel = "RMSE"
+plot_results(xlabel, ylabel, method_labels, DEBUG)
+
+for i, method in enumerate(methods):
+    plt.plot(missing_fractions, missing_ranks[i])
+ylabel = "Rank"
+plot_results(xlabel, ylabel, method_labels, DEBUG)
+
+for i, method in enumerate(methods):
+    plt.plot(missing_fractions, missing_times[i])
+ylabel = "Time"
+plot_results(xlabel, ylabel, method_labels, DEBUG)
+
 
 '''
 # transform inbetweened data back to the original format of motion data
@@ -119,7 +162,7 @@ index = 1   # column index
 for key in graphic_params_keys:
     start = index   # inclusive
     end = index + len(motion_dict[key][0])  # exclusive
-    inbetweened_motion_dict[key] = [frame[start:end] for frame in inbetweened_data]
+    inbetweened_motion_dict[key] = [list(frame[start:end]) for frame in inbetweened_data]
     index = end
 
 
