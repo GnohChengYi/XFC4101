@@ -12,7 +12,7 @@ from Method.slerp import SphericalLinearInterpolator
 import os
 
 
-DEBUG = True
+DEBUG = False
 
 
 # load demo data
@@ -58,7 +58,7 @@ missing_RMSEs = [[] for _ in range(len(methods))]  # [method][missing_fraction][
 missing_ranks = [[] for _ in range(len(methods))] # [method][missing_fraction][rank]
 missing_times = [[] for _ in range(len(methods))] # [method][missing_fraction][time]
 for missing_fraction in missing_fractions:
-    print(f"Missing fraction: {missing_fraction}")
+    print(f"\nMissing fraction: {missing_fraction}")
     RMSEs = [[] for _ in range(len(methods))]   # each [] will store the RMSEs (for each trial) of the method in the corresponding index of methods
     ranks = [[] for _ in range(len(methods))]   # each [] will store the ranks (for each trial) of the method in the corresponding index of methods
     times = [[] for _ in range(len(methods))]   # each [] will store the times (for each trial) of the method in the corresponding index of methods
@@ -87,7 +87,7 @@ for missing_fraction in missing_fractions:
             
             # save inbetweened_data to a file
             if not DEBUG:
-                file_name = f"chopsticks/missing={missing_fraction}_method={method.__class__.__name__}_trial={trial}.txt"
+                file_name = f"chopsticks/data/missing={missing_fraction}_method={method.__class__.__name__}_trial={trial}_time={execution_time}.txt"
                 with open(file_name, "w") as file:
                     for frame in inbetweened_data:
                         file.write(",".join(str(value) for value in frame) + "\n")
@@ -100,7 +100,6 @@ for missing_fraction in missing_fractions:
 
         # rank the methods based on RMSE
         ranked_methods = sorted(range(len(methods)), key=lambda i: method_RMSE[i])
-        print()
         for i, method in enumerate(methods):
             RMSEs[i].append(method_RMSE[i])
             ranks[i].append(ranked_methods.index(i) + 1)
@@ -117,10 +116,9 @@ for missing_fraction in missing_fractions:
         missing_times[i].append(average_time)
 
 
-if DEBUG:   
-    print(f'Missing RMSEs: {missing_RMSEs}')
-    print(f'Missing ranks: {missing_ranks}')
-    print(f'Missing times: {missing_times}')
+print(f'Missing RMSEs: {missing_RMSEs}')
+print(f'Missing ranks: {missing_ranks}')
+print(f'Missing times: {missing_times}')
 
 
 # plot results
